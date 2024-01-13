@@ -9,7 +9,7 @@ public class TraceId {
     private static final int start = 0;
     private static final int limit = 8;
 
-    private TraceId() {
+    public TraceId() {
         this.id = id;
         this.level = level;
     }
