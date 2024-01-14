@@ -9,17 +9,17 @@ public class TraceId {
     private static final int start = 0;
     private static final int limit = 8;
 
-    private TraceId() {
+    public TraceId(String id, int level) {
         this.id = id;
         this.level = level;
     }
 
-    public TraceId(String id, int level) {
+    public TraceId() {
         this.id = createId();
         this.level = 0;
     }
 
-    private String createId() {
+    public String createId() {
         return UUID.randomUUID().toString().substring(start, limit);
     }
 
