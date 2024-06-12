@@ -187,3 +187,31 @@ public class Application {
     }
 }
 ```
+
+----------------------------------
+@Target: 어노테이션이 적용될 수 있는 요소를 지정
+
+ElementType.TYPE은 어노테이션이 클래스, 인터페이스, 열거형에 적용
+
+```java
+@Target(ElementType.TYPE)
+public @interface MyAnnotation {}
+```
+
+@Retention: 어노테이션이 어느 시점까지 유지될 것인지를 지정합니다. 예를 들어, RetentionPolicy.RUNTIME은 어노테이션이 런타임까지 유지됨을 의미
+```java
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {}
+```
+
+빈 생성: MyService와 MyCustomAdvice 빈이 Spring 컨테이너에 의해 생성됩니다.
+
+프록시 생성: Spring AOP는 @Aspect와 @Pointcut을 사용하여 MyService 빈의 프록시를 생성합니다.
+
+메서드 호출 가로채기: myService.myMethod()가 호출되면, 프록시가 이 호출을 가로챕니다.
+
+어드바이스 실행: 프록시가 @MyCustomAnnotation이 붙은 메서드를 호출하는 포인트컷을 발견하고, aroundAdvice를 실행합니다.
+
+메서드 실행: aroundAdvice 내부에서 joinPoint.proceed()가 호출되면 실제 메서드(myMethod())가 실행됩니다.
+
+어드바이스 후 처리: 실제 메서드 실행 후, aroundAdvice의 후처리가 실행됩니다.
