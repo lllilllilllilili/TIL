@@ -4,10 +4,45 @@
 
 - 상관관계 ID가 존재하지 않는다면 상관관계 ID를 생성해서 서비스 호출에 삽입한다.
 - 아웃바운드 서비스 호출에 대한 상관관계 ID 전파를 관리하여 트랜잭션에 대한 상관관계 ID가 자동으로 추가되도록 한다.
-    - filter 적용할 때 다 필요하다? 전파
-- 서비스 호출의 추적 정보를 집킨 분산 추적 플랫폼에 발행한다.
+    - **서비스 A**는 **서비스 B**에 HTTP 요청을 보낼 때, HTTP 헤더에 `X-Correlation-ID: abc123`를 포함시켜 보낸다.
+    - **서비스 B**는 요청을 수신하여 `X-Correlation-ID` 헤더에서 상관관계 ID를 읽어들이고, 이 ID를 사용하여 자신의 작업을 추적한다.
 
-질문 : X 
+```jsx
+@Configuration
+public class FeignConfig {
+    
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+        return requestTemplate -> {
+            String correlationId = MDC.get("X-Correlation-ID");
+            if (correlationId != null) {
+                requestTemplate.header("X-Correlation-ID", correlationId);
+            }
+        };
+    }
+}
+
+@Component
+public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String correlationId = request.getHeader("X-Correlation-ID");
+        if (correlationId == null) {
+            correlationId = UUID.randomUUID().toString();
+        }
+        MDC.put("X-Correlation-ID", correlationId);
+        response.setHeader("X-Correlation-ID", correlationId);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("X-Correlation-ID");
+        }
+    }
+}
+```
+- 서비스 호출의 추적 정보를 집킨 분산 추적 플랫폼에 발행한다.
 
 ## 11.1.1 라이선싱 및 조직 서비스에 스프링 클라우드 슬루스 추가
 
@@ -22,6 +57,10 @@
 
 ```jsx
 애플리케이션 이름 | 추적 ID | 스팬 ID | 집킨 전송 여부 를 나타낸다. 
+```
+예시
+```jsx
+[my-application,1a2b3c4d5e6f7g8h,1a2b3c,zipkin] INFO com.example.MyClass - This is a log message.
 ```
 
 추적 ID 가 상관관계 ID에 해당하는 용어로 트랜잭션 전체에서 고유한 번호다. 
@@ -46,9 +85,9 @@
 ## 11.2.2 서비스에서 로그백 구성
 
 - 로그스태시 인코더 추가
-    - 네..
+    - 로그 메시지를 Logstash가 이해할 수 있는 JSON 형식으로 인코딩
 - 로그스태시 TCP 어펜더 생성
-    - docker 통신 목적인지
+    - 구조화된 로그를 생성하여, 로그 데이터를 더 쉽게 검색하고 분석할 수 있도록 한다. 
 
 LogstaEncoder 로 형식을 맞춘 애플리케이션 로그를 확인해볼 수 있다. 
 
@@ -61,21 +100,21 @@ ELK 스택 컨테이너를 설정하려면 두 단계를 따라야 한다.
 
 로그 스태시 구성 파일
 
-```jsx
-input {
+```jsx 
+input { //수신
 	tcp {
 		port => 5000
 		codec => json_lines
 	}
 }
 
-filter {
+filter { //로그 데이터를 필터링 
 	mutate {
 		add_tag => [ "manningPublications" ]
 	}
 }
 
-output {
+output { //로그 데이터를 전송할 위치 
 	elasticsearch {
 		hosts => "elasticsearch:9200"
 		}
@@ -84,7 +123,40 @@ output {
 
 이걸 docker-compose.yml 파일에 ELK 도커 항목에 추가해줄 수 있다. 
 
-## 11.2..4 키바나 구성
+```jsx
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.13.2
+    container_name: logstash
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5000:5000"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.2
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
+volumes:
+  esdata:
+    driver: local
+```
 
 ## 11.2.5 키바나에서 스프링 클라우드 슬루스의 추적 ID 검색
 
@@ -144,6 +216,4 @@ zipkin.baseUrl: http://zipkin:9411
 
 *스팬 트랜잭션 내 개별 작업 또는 로직 의미 
 
-⇒ 음 …. ! 
-
-12장 ?
+Spring Cloud Sleuth를 사용하는 애플리케이션에서 트레이싱 데이터를 Zipkin으로 전송하려면 이 설정을 포함
