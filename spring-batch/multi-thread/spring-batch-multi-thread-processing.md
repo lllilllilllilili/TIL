@@ -1,0 +1,3 @@
+- FutureTask<O> task = new FutureTask<>(Callable<V>)
+    - Thread 가 수행하는 Task로서 Callable 을 실행시키고 결과를 Future<V>에 담아 반환
+    - Runnable 은 스레드를 실행하고 코드를 실행할 수 있는 인터페이스를 제공하며, 반환 값을 가질 수 없다. 반면에 Callable 은 스레드를 실행하고 코드를 실행하면서 반환 값을 가질 수 있다. 
