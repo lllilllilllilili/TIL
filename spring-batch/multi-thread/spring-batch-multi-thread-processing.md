@@ -24,3 +24,28 @@
     TaskExecutor taskExecutor = new SyncTaskExecutor(); 
     FutureTask<O> task = new FutureTask<>(Callable<V>)
 ```
+
+## 1차 요약
+- taskExecutor 에 execute 가 실행이 되면 FutureTask<O> task = new FutureTask<>(Callable<V>) 에 Callable 이 실행이 되는데 Callable 은 ItemProcessor 를 실행시킨다. 
+
+```java
+@Nullable
+public Future<0> process (final I item) throws Exception {
+    final StepExecution stepExecution = getStepExecution(); 
+    FutureTask<0> task = new FutureTask<>(new Callable<0>() { 
+        public 0 call() throws Exception {
+            if (stepExecution != null) {
+                StepSynchronizationManager.register(stepExecution);
+            }
+            try {
+                return delegate.process(item);
+            }
+            finally {
+            if (stepExecution != null) {
+                StepSynchronizationManager.close();
+            }
+            });
+        }
+    taskExecutor.execute(task);
+    return task;
+```
