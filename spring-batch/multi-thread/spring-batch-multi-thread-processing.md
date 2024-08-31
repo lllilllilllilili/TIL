@@ -14,3 +14,13 @@
     - AsyncItemProcessor -> ItemProcessor
     - AsyncItemWriter -> ItemWriter 
 (-> 는 delegate 의미)
+
+- AsyncItemProcessor 는 ItemProcessor 에 위임하게 되는데 내부적으로 TaskExecutor 를 가지고 있다. (new SyncTaskExecutor() 이거는 Thread 생성하고 Task를 할당해주는 역할을 하는듯) 그리고나서 Thread가 수행하는 Task로 Callable을 실행시키고 결과를 Future<V> 에 담에서 반환하게 된다. 
+
+```java
+    //아래 순서대로 실행되는듯 하다. 
+    AsyncItemProcessor
+    ItemProcessor<I, O> delegate;
+    TaskExecutor taskExecutor = new SyncTaskExecutor(); 
+    FutureTask<O> task = new FutureTask<>(Callable<V>)
+```
