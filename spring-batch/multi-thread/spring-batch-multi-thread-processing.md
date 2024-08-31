@@ -38,7 +38,7 @@ public Future<0> process (final I item) throws Exception {
                 StepSynchronizationManager.register(stepExecution);
             }
             try {
-                return delegate.process(item);
+                return delegate.process(item); //이게 마지막에 동작하나 보다. 
             }
             finally {
             if (stepExecution != null) {
@@ -48,4 +48,15 @@ public Future<0> process (final I item) throws Exception {
         }
     taskExecutor.execute(task);
     return task;
+```
+
+```java
+public Step step() throws Execption {
+        return stepBuilderFactory.get("step")
+                                 .chunk(100)
+                                 .reader(pagingItemReader())
+                                 .processor(asyncItemProceesor())
+                                 .writer(asyncItemWriter())
+                                 .build()
+}
 ```
