@@ -60,3 +60,16 @@ public Step step() throws Execption {
                                  .build()
 }
 ```
+
+## 스프링 배치 멀티 스레드 프로세싱
+- Step 내에서 멀티 스레드로 Chunk 기반 처리가 이루어지는 구조 
+- TaskExecutorRepeatTemplate 이 반복자로 사용되며 설정한 개수(throttleLimit) 개수 만큼 스레드 생성
+- Job > Step > TaskExecutorRepeatTemplate 
+    - TaskExecutorRepeatTemplate (멀티스레드)
+        - Runnable -> RepeatCallback -> ChunkOrientedTasklet 
+    - RepeatTemplate  (단일 스레드)
+        - RepeatCallback -> Runnable -> ChunkOrientedTasklet
+
+## 공통 처리
+- ChunkOrientedTasklet 
+    - ItemReader -> ItemProceesor -> ItemWriter
