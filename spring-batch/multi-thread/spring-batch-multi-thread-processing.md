@@ -73,3 +73,11 @@ public Step step() throws Execption {
 ## 공통 처리
 - ChunkOrientedTasklet 
     - ItemReader -> ItemProceesor -> ItemWriter
+    - 위 과정이 모두 thread-safe 하다.  
+
+## TaskExecutorRepeatTemplate
+- 조절 제한 개수
+    - int throttleLimit = DEFAULT_THROTTLE_LIMIT 
+- Thread 를 조절 제한 수 만큼 생성하고 Task를 할당
+    - TaskExecutor taskExecutor = new SyncTaskExecutor(); 
+    - 단 위와 같은 방식은 동기적으로 처리된다.
