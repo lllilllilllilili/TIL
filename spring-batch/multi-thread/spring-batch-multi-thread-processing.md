@@ -67,8 +67,7 @@ public Step step() throws Execption {
 - Job > Step > TaskExecutorRepeatTemplate 
     - TaskExecutorRepeatTemplate (멀티스레드)
         - Runnable -> RepeatCallback -> ChunkOrientedTasklet 
-    - RepeatTemplate  (단일 스레드)
-        - RepeatCallback -> Runnable -> ChunkOrientedTasklet
+    
 
 ## 공통 처리
 - ChunkOrientedTasklet 
@@ -80,4 +79,4 @@ public Step step() throws Execption {
     - int throttleLimit = DEFAULT_THROTTLE_LIMIT 
 - Thread 를 조절 제한 수 만큼 생성하고 Task를 할당
     - TaskExecutor taskExecutor = new SyncTaskExecutor(); 
-    - 단 위와 같은 방식은 동기적으로 처리된다.
+    - 단 위와 같은 방식은 동기적으로 처리된다. 
