@@ -80,3 +80,38 @@ public Step step() throws Execption {
 - Thread 를 조절 제한 수 만큼 생성하고 Task를 할당
     - TaskExecutor taskExecutor = new SyncTaskExecutor(); 
     - 단 위와 같은 방식은 동기적으로 처리된다. 
+
+## Multi-threaded Step
+- Job -> taskletStep -> TaskExecutorRepeatTemplate -> TaskExecutor -> 스레드 생성 -> Runnable 안에 ChunkOrientedTasklet 이 있음 -> ItemReader - ItemProcessor - ItemWriter 가 동작
+
+## 주의
+- ItemReader 는 DB에서 데이터를 읽어올텐데 데이터 동기화가 필요하니 각 스레드 별로 thread-safe 가 필요함, 데이터 중복 등 문제 발생, 청크는 동시성 이슈 때문에 스레드 별로 하나씩 갖는다. 
+- 각각의 스레드는 스택을 가지는데 청크를 담는다. 공유가 되지 않는다. 
+
+## 스레드에 안전한 페이징 제공
+- jdbcPagingItemReader
+- jpaPagingItemReader
+```java
+public Step step() throws Exception {
+        return stepBuilderFactory.get("step")
+                                 .<Customer, Customer>chunk(100)
+                                 .reader(pagingItemReader())
+                                 .processor(customerItemProcessor())
+                                 .writer(customerItemWriter())
+                                 .taskExecutor(taskExecutor())
+                                 .build()
+}
+```
+- 스레드 생성 및 실행을 위한 taskExecutor 설정
+- 자바에서 스레드 풀 관리할 수 있는 ThreadPoolTaskExecutor 
+- 이런식으로 병렬 처리 할 수 있따.
+```java
+@Bean
+public TaskExecutor taskExecutor() {
+    ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+    taskExecutor.setCorePoolSize(4);
+    taskExecutor.setMaxPoolSize(8);
+    taskExecutor.setThreadNamePrefix("async-thread");
+    return taskExecutor;
+}
+```
