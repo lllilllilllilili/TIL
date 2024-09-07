@@ -86,6 +86,7 @@ public Step step() throws Execption {
 
 ## 주의
 - ItemReader 는 DB에서 데이터를 읽어올텐데 데이터 동기화가 필요하니 각 스레드 별로 thread-safe 가 필요함, 데이터 중복 등 문제 발생, 청크는 동시성 이슈 때문에 스레드 별로 하나씩 갖는다. 
+- ItemReader에서는 Synchronize 로 동시성 이슈가 없도록 한다. 
 - 각각의 스레드는 스택을 가지는데 청크를 담는다. 공유가 되지 않는다. 
 
 ## 스레드에 안전한 페이징 제공
@@ -115,3 +116,4 @@ public TaskExecutor taskExecutor() {
     return taskExecutor;
 }
 ```
+- SimpleChunkProvider 클래스에서 provide 메소드는 Chunk<T> inputs = new Chunk<>() 로 Chunk 를 스레드 별로 생성하게 된다.
