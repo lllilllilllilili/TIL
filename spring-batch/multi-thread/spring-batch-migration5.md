@@ -1,5 +1,11 @@
 **Spring Batch 5.0 Migration Guide** 
 
+## @EnableBatchProcessing
+- @EnableBatchProcessing는 Spring Batch가 트랜잭션 관리를 위해 사용할 수 있는 트랜잭션 관리자 빈이 애플리케이션 컨텍스트에 등록되었고, 이를 다른 빈이나 서비스가 사용할 수 있게 해주었다. 트랜잭션 관리자의 무조건적인 노출은 사용자 정의 트랜잭션 관리자와 간섭할 수 있다. 
+    - (문제) https://github.com/spring-projects/spring-batch/issues/816 
+    - StepBuilderHelper#transactionManager(PlatformTransactionManager)한 단계 아래로 이동되었다. 
+    - 태스크릿 단계에만 필요
+
 - https://github.com/spring-projects/spring-batch/wiki/Spring-Batch-5.0-Migration-Guide
 - 빌더 팩토리 사용 중단 이슈 :
     - https://github.com/spring-projects/spring-batch/issues/4188
