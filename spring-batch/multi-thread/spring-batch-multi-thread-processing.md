@@ -117,3 +117,6 @@ public TaskExecutor taskExecutor() {
 }
 ```
 - SimpleChunkProvider 클래스에서 provide 메소드는 Chunk<T> inputs = new Chunk<>() 로 Chunk 를 스레드 별로 생성하게 된다.
+
+## Cursor
+- Cursor 는 Thread 동기화를 위한 작업이 없다. 중복된 데이터를 읽어올 수 있다. 
