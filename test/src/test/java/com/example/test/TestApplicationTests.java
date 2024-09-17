@@ -1,6 +1,7 @@
 package com.example.test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -21,6 +22,7 @@ class TestApplicationTests {
     @Test
     void signUpForm() throws Exception{
         mockMvc.perform(get("/sign-up"))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name("account/sign-up"));
     }
