@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class AccountController {
+public class AccountController  implements AccountControllerDocs  {
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
         return "account/sign-up"; //처리 방법에 대해 고민
