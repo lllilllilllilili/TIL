@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AccountController  implements AccountControllerDocs  {
     @GetMapping("/sign-up")
-    public String signUpForm(Model model) {
+    public String signUpForm(SignUpForm signUpForm) {
         return "account/sign-up"; //처리 방법에 대해 고민
     }
 }

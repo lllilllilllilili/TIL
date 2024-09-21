@@ -12,5 +12,5 @@ public interface AccountControllerDocs {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "유저 정보 저장 성공"),
         @ApiResponse(responseCode = "409", description = "유저 정보 저장 실패(유저 중복)") })
-    String signUpForm(Model model);
+    String signUpForm(SignUpForm signUpForm);
 }
