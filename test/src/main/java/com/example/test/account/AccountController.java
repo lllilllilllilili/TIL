@@ -1,13 +1,15 @@
 package com.example.test.account;
 
-import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
+@Slf4j
 public class AccountController  implements AccountControllerDocs  {
     @GetMapping("/sign-up")
     public String signUpForm(String userId) {
@@ -15,10 +17,12 @@ public class AccountController  implements AccountControllerDocs  {
     }
 
     @PostMapping("sign-up")
-    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors) {
+    public String signUpSubmit(@RequestBody @Valid SignUpForm signUpForm, Errors errors) {
         if (errors.hasErrors()) {
+            log.info("signForm not valid");
             return "account/sign-up";
         }
+        log.info("signForm valid");
         return "redirect:/";
     }
 }
