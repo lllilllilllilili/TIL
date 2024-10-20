@@ -1,4 +1,4 @@
-## git 브랜치간 충돌
+## git branch conflict
 - 오늘 fatal: Need to specify how to reconcile divergent branches 요런 이슈가 발생했는데 찾아보니 두 개의 브랜치 간에 충돌 이나 이상이 발생할 때 나타나는 메시지라고 한다. 
 - git pull 을 사용하여 origin branch에서 최신 커밋 코드를 받아오려고 했으나 git 이 로컬 브랜치와 원격 브랜치의 변경 사항에 어떻게 병합해야 할지 명확하지 않기 때문에 발생했다. 
 - 이건 보통 로컬 브랜치와 원격 브랜치간 서로 다른 커밋을 포함하고 있어서 Git 이 이것을 병합할 방법을 모를 때 해당 오류가 발생한다. divergence 가 발생했다고 한다. git 이 알아서 병합해주지는 않는다. 
